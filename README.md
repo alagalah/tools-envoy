@@ -2,11 +2,13 @@
 
 I like emacs and gud-gdb.
 
-WARNING: has my local paths hard-coded in places (see TODO)
-From this repo:
+WARNING: has my local paths hard-coded in places (see TODO).
+
+
+From local clone of this repo:
 
 ```bash
- export FDIO=/git/work/fdio/envoy 
+ export FDIO=/git/work/fdio
  ./tools/bazel-test-gdb --package_path %workspace%:$FDIO/envoy //test/common/http:async_client_impl_test --test_env=ENVOY_IP_TEST_VERSIONS=v4only -c dbg
 ```
 
