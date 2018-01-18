@@ -15,15 +15,15 @@ From this repo:
 
 Does following:
 * opens emacs with split window:
-** gud-gdb
-** source code from test (hence you can't do things like //test/common/...)
+  * gud-gdb
+  * source code from test (hence you can't do things like //test/common/...)
 
 
 For debugging UT from github.com/alagalah/envoy
 
 TODO:
 * "set directories" in .py needs to have the ~/.cache/bazel/.../<UUID> added in order to step through source
-** temporarily you can, for example:
+  * temporarily you can, for example:
 ```
 (gdb) directory  /home/alagalah/.cache/bazel/_bazel_alagalah/b3ac823edb50659b90c8bc3c2a07ed24
 ```
