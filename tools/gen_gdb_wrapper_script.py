@@ -16,14 +16,17 @@ import os
 
 fn = "${generated_path}.cmd"
 f = open(fn,'w')
-f.write("set directories /git/work/fdio/envoy \\n")
 
 env = ${b64env}
+env_lines = []
+env_lines.append("set directories /git/work/fdio/envoy \\n")
 for k, v in env.iteritems():
   os.environ[k] = v
   if not k.startswith('BASH_FUNC'):
-    f.write("set environment "+str(k)+"="+str(v)+"\\n")
+    env_lines.append("set environment "+str(k)+"="+str(v)+"\\n")
 
+f.writelines(env_lines)
+f.close()
 
 os.system("emacs --eval \\\"(progn (gud-gdb \\\\\\\"gdb -x ${generated_path}.cmd  --fullname ${binary} --args ${test_args}\\\\\\\") (find-file\\\\\\\"${source_path}\\\\\\\") (split-window-right) ) \\\"")
 """)
