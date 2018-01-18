@@ -1,11 +1,8 @@
-* Hack on Envoy's GDB scripts
+# Hack on Envoy's GDB scripts
 
 I like emacs and gud-gdb.
 
-Some opinionated pathing hardcoded for where I keep things.
-
-Easy enough to fix.
-
+WARNING: has my local paths hard-coded in places (see TODO)
 From this repo:
 
 ```bash
@@ -21,7 +18,7 @@ Does following:
 
 For debugging UT from github.com/alagalah/envoy
 
-TODO:
+## TODO
 * "set directories" in .py needs to have the ~/.cache/bazel/.../<UUID> added in order to step through source
   * temporarily you can, for example:
 ```
