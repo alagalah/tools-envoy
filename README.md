@@ -7,7 +7,7 @@ From local clone of this repo:
 
 ```bash
  export ENVOY_SRC=/git/work/fdio/envoy
- ./tools/bazel-test-gdb --package_path %workspace%:$ENVOY_SRC //test/common/http:async_client_impl_test --test_env=ENVOY_IP_TEST_VERSIONS=v4only -c dbg
+ ./bazel-test-gudgdb --package_path %workspace%:$ENVOY_SRC //test/common/http:async_client_impl_test --test_env=ENVOY_IP_TEST_VERSIONS=v4only -c dbg
 ```
 
 Does following:
