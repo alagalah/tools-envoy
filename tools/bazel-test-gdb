@@ -21,16 +21,21 @@ SCRIPT_DIR="$(realpath "$(dirname "$0")")"
 [[ -z "${GDB}" ]] && GDB=gdb
 
 #nasty hack
-cd /git/work/fdio/envoy
+[[ -z "${ENVOY_SRC}" ]] && ENVOY_SRC=/git/work/fdio/envoy
 
 GDB_RUNNER=$(mktemp -t "bazel-test-gdb.XXXXXXX")
 function cleanup() {
   #rm -f "${GDB_RUNNER}"
-  echo "${GDB_RUNNER}"
+  echo "ERROR: ${GDB_RUNNER}"
 }
 trap cleanup EXIT
 
+echo "first ${PWD}"
+echo "envoy: ${ENVOY_SRC}"
+cd "${ENVOY_SRC}"
+echo "now: ${PWD}"
+
 "${BAZEL}" test "$@" --strategy=TestRunner=standalone --cache_test_results=no \
-  --test_output=summary --run_under="${SCRIPT_DIR}/gen_gdb_wrapper_script.py ${GDB} ${GDB_RUNNER}"
+		   --test_output=summary --run_under="${SCRIPT_DIR}/gen_gdb_wrapper_script.py ${ENVOY_SRC} ${GDB} ${GDB_RUNNER}"
 chmod u+x "${GDB_RUNNER}"
 "${GDB_RUNNER}"
