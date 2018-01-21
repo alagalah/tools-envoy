@@ -11,7 +11,7 @@ Does following:
 * OPTIONAL: with eval parameter:
   * expects an existing emacs server with socket in /tmp/emacs1000/server
   * uses emacsclient to open a buffer with elisp expressions
-  * '''M-x eval-buffer''' will do DEFAULT actions and kill-buffer (terminating client)
+  * **M-x eval-buffer** will do DEFAULT actions and kill-buffer (terminating client)
 
 From local clone of this repo:
 
