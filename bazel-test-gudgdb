@@ -9,6 +9,13 @@
 # trigger generation of debug symbols.  By default the "opt" build type does not
 # include symbols for tests: see bazel/envoy_build_system.bzl for details.
 
+
+if [ "$1" == "eval" ];
+then
+  GDB=eval
+  shift
+fi
+
 if [[ ! "$3" =~ (@[a-zA-Z0-9_-]+)?//.*:[a-zA-Z0-9_-]+ ]]
 then
   echo "Third argument to $0 must be a [@repo]//test/foo:bar label identifying a single test to run"

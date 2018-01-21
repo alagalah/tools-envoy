@@ -31,8 +31,26 @@ for k, v in env.iteritems():
 f.writelines(env_lines)
 f.close()
 
-os.system("emacs --eval \\\"(progn (gud-gdb \\\\\\\"gdb -x ${generated_path}.cmd  --fullname ${binary} --args ${test_args}\\\\\\\") (find-file \\\\\\\"${source_path}\\\\\\\") (split-window-right) ) \\\"")
+if '${gdb}' == 'gdb':
+  os.system("emacs --eval \\\"(progn (gud-gdb \\\\\\\"gdb -x ${generated_path}.cmd  --fullname ${binary} --args ${test_args}\\\\\\\") (find-file \\\\\\\"${source_path}\\\\\\\") (split-window-right) ) \\\"")
+else:
+  evalfn = "${generated_path}.emacseval"
+  eval_lines = []
+  f = open (evalfn, 'w')
+  eval_lines.append('''(gud-gdb \"gdb -x ${generated_path}.cmd  --fullname ${binary} --args ${test_args}\") \n''')
+  eval_lines.append('''(find-file "${source_path}\") \n''')
+  buffer=fn.split('/tmp/')
+  eval_buffer=evalfn.split('/tmp/')
+  eval_lines.append('''(switch-to-buffer-other-window "*gud-'''+buffer[-1]+'''*") \n''')
+  eval_lines.append('''(remove-hook 'kill-buffer-query-functions 'server-kill-buffer-query-function)''')
+  eval_lines.append('''(kill-buffer "'''+eval_buffer[-1]+'''")''')
+  f.writelines(eval_lines)
+  f.close()
+  print "Running emacsclient -s /tmp/emacs1000/server "+evalfn
+  print "Expecting emacs running with start-server"
+  os.system("emacsclient -s /tmp/emacs1000/server %s" % evalfn)
 """)
+
 
 if __name__ == '__main__':
   project_path = sys.argv[1]
@@ -47,6 +65,7 @@ if __name__ == '__main__':
         GDB_RUNNER_SCRIPT.substitute(
             b64env=str(dict(os.environ)),
             generated_path=generated_path,
+            gdb=gdb,
             project_path=project_path,
             source_path=source_path,
             binary=test_args[0],
