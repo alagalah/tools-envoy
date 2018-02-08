@@ -1,0 +1,40 @@
+#! /usr/bin/env bash
+#
+# 1-client-envoy-server.sh
+#   -- script to run VPP+envoy tests.
+#
+
+# if [ $USER != "root" ] ; then
+#     echo "Restarting script with sudo..."
+#     sudo $0 ${*}
+#     exit
+# fi
+
+export VCL_DEBUG=0
+export VCL_APP_SCOPE_LOCAL=true
+export LD_LIBRARY_PATH="/git/work/fdio/vpp/build-root/install-vpp-native/vpp/lib64/:"
+srvr_addr="127.0.0.1"
+
+TEST_DIR="/git/work/fdio/envoyproxy/tools-envoy/simpletests/socket_test"
+
+#Kick off VPP
+sudo rm /dev/shm/*
+/git/work/fdio/vpp/build-root/install-vpp-native/vpp/bin/vpp unix { interactive full-coredump coredump-size unlimited exec ${TEST_DIR}/config/vppconfig } api-segment { gid 1000 } &
+
+sleep 5
+
+#Kick off server
+/git/work/fdio/vpp/build-root/install-vpp-native/vpp/bin/vcl_test_server 22000 &
+
+#Kick off envoy
+#sleep 15 &
+
+
+#Kick off client, get pid and wait
+/git/work/fdio/vpp/build-root/install-vpp-native/vpp/bin/vcl_test_client -X -E "Hello!" $srvr_addr 22000 &
+CLIENT_PID=$!
+
+echo `jobs`
+
+wait $CLIENT_PID
+echo "Client done"
