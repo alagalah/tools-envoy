@@ -16,6 +16,39 @@ srvr_addr="127.0.0.1"
 
 TEST_DIR="/git/work/fdio/envoyproxy/tools-envoy/simpletests/socket_test"
 
+if [[ $# -eq 0 ]]; then
+   SERVER=1
+   CLIENT=1
+   VPP=1
+   ENVOY=1
+fi
+
+if [[ $# -gt 1 ]]; then
+	echo "Too many args. Either:"
+	echo "  <null>   : run all (envoy, client, server, vpp)"
+	echo "  --client : just run sock_test_client"
+	echo "  --server : just run sock_test_server"
+	echo "  --vpp    : ju |server|vpp"
+	exit 1
+fi
+
+while test $# -gt 0
+do
+    case "$1" in
+        --vpp)
+			echo "start vpp"
+				;;
+        --opt2) echo "option 2"
+				;;
+        --*) echo "bad option $1"
+             ;;
+        *) echo "argument $1"
+           ;;
+    esac
+    shift
+done
+
+
 
 #Kick off server
 /git/work/fdio/vpp/build-root/install-vpp-native/vpp/bin/sock_test_server 22000 &
