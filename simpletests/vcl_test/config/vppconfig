@@ -1,0 +1,4 @@
+show version
+show version verbose
+show cpu
+show int
