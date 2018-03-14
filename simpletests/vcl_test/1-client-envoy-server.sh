@@ -14,13 +14,27 @@ export VCL_DEBUG=0
 export VCL_APP_SCOPE_LOCAL=true
 srvr_addr="127.0.0.1"
 
-TEST_DIR="/git/work/fdio/envoyproxy/tools-envoy/simpletests/socket_test"
+if [[ -z "${VPPSRC}" || -z "${ENVOY_SRC}" || -z "${ENVOY_TOOLS}" ]]; then
+    echo "VPPSRC=${VPPSRC}"
+    echo "ENVOY_SRC=${ENVOY_SRC}"
+    echo "ENVOY_TOOLS=${ENVOY_TOOLS}"
+    echo "All need to be set"
+    exit 1
+fi
+
+BIN_SERVER=$VPPSRC/build-root/build-vpp-native/vpp/.libs/vcl_test_server
+BIN_CLIENT=$VPPSRC/build-root/build-vpp-native/vpp/.libs/vcl_test_client
+BIN_VPP=$VPPSRC/build-root/install-vpp_debug-native/vpp/bin/vpp
+BIN_ENVOY=$ENVOY_SRC/bazel-bin/source/exe/envoy-static -c $ENVOY_TOOLS/simpletests/socket_test/config/client-envoy-server.json &
+
+SERVER=CLIENT=VPP=ENVOY=0
 
 if [[ $# -eq 0 ]]; then
    SERVER=1
    CLIENT=1
    VPP=1
    ENVOY=1
+   echo "Starting all"
 fi
 
 if [[ $# -gt 1 ]]; then
@@ -37,31 +51,70 @@ do
     case "$1" in
         --vpp)
 			echo "start vpp"
+			VPP=1
 				;;
-        --opt2) echo "option 2"
+        --client)
+            echo "start client"
+            CLIENT=1
 				;;
-        --*) echo "bad option $1"
+        --server)
+            echo "start server"
+            SERVER=1
+				;;
+        --envoy)
+            echo "start envoy"
+            ENVOY=1
+				;;
+        --*)
+            echo "bad option $1"
+            exit 1
              ;;
-        *) echo "argument $1"
+        *)
+            echo "argument $1"
+            exit 1
            ;;
     esac
     shift
 done
 
-
-
 #Kick off server
-/git/work/fdio/vpp/build-root/install-vpp_debug-native/vpp/bin/vcl_test_server 22000 &
-SERVER_PID=$!
-sleep 2
+if [[ "${SERVER}" -eq 1 ]]; then
+  if [[ -f "${BIN_SERVER}" ]]; then
+    #$VPPSRC/build-root/build-vpp-native/vpp/.libs/vcl_test_server 22000 &
+    #SERVER_PID=$!
+    #sleep 2
+    echo "running server"
+  else
+     echo "Asked for server but no executable"
+     exit 1
+  fi
+
+fi
+
+
 #Kick off envoy
-$ENVOY_SRC/bazel-bin/source/exe/envoy-static -c $ENVOY_TOOLS/simpletests/socket_test/config/client-envoy-server.json &
-ENVOY_PID=$!
-sleep 2
+if [[ "$ENVOY" -eq 1 ]]; then
+  if [[ -f "${BIN_ENVOY}" ]]; then
+#        ENVOY_PID=$!
+#        sleep 2
+    echo "starting envoy"
+  else
+     echo "Asked for Envoy but no executable"
+     exit 1
+  fi
+fi
 
 #Kick off client, get pid and wait
-/git/work/fdio/vpp/build-root/install-vpp_debug-native/vpp/bin/vcl_test_client -X -E "Hello!" $srvr_addr 22001 &
-CLIENT_PID=$!
+if [[ "$CLIENT" -eq 1 ]]; then
+  if [[ -f "${BIN_CLIENT}" ]]; then
+    echo "starting client"
+  else
+     echo "Asked for Envoy but no executable"
+     exit 1
+  fi
+fi
+
+exit 0
 
 echo `jobs`
 
