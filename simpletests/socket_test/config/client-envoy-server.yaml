@@ -1,5 +1,7 @@
   admin:
     access_log_path: /dev/null
+    transport_socket:
+        name: vpp
     address:
       socket_address:
         address: 127.0.0.1
